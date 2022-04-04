@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
+import Home from './views/Home';
+import Error from './views/Error';
+import AppTitle from './components/AppTitle'
+import UserContext from './context/UserContext';
+import SignUp from './views/SignUp';
+// import Footer from './components/Footer'
 
-function App() {
+const App = () => {
+  const [key, setKey] = React.useState();
+  const userDetails = { key, setKey };
+  React.useEffect(() => {
+    const key = 'key=';
+    const search = document.cookie.search(key);
+    if (search !== -1) {
+      const startIndex = search + key.length;
+      const end = document.cookie.slice(startIndex).search(';') + startIndex;
+      setKey(document.cookie.slice(startIndex, end));
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="page-container">
+      <UserContext.Provider value={userDetails}>
+        <div className="content-wrap">
+          <Router>
+          <AppTitle /> 
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+              <Route exact path="/signup">
+                <SignUp />
+              </Route>
+              <Route path="*">
+                <Error />
+              </Route>
+            </Switch>
+          </Router>
+        </div>
+      </UserContext.Provider>
     </div>
   );
-}
-
+};
 export default App;
